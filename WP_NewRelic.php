@@ -4,6 +4,8 @@
  *
  * Handles communication between WordPress and the NewRelic API
  * Supports v2 of the API - https://rpm.newrelic.com/api/explore/
+ *
+ * @version 1.0
  */
 
 /**
