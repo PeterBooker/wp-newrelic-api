@@ -54,7 +54,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          *
          * @var int
          */
-        private $account_id;
+        private $resource_id;
 
         /**
          * NewRelic API Call Type
