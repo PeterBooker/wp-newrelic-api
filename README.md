@@ -2,9 +2,16 @@
 
 WP NewRelic handles communication between WordPress and the NewRelic API v2. It can be added to your theme/plugin or the /mu-plugins/ folder.
 
-## Support Endpoints
+## Supported Endpoints
 
+* servers-list
+* servers-show (Requires Server ID)
 
+* applications-list
+* applications-show (Requires Application ID)
+
+* key_transactions-list
+* key_transactions-show (Requires Key Transaction ID)
 
 ## Usage Examples
 
@@ -25,7 +32,7 @@ $newrelic->set_call_type( 'applications-list' );
 
 $response = $newrelic->make_request();
 
-print_r()
+print_r( $response );
 
 ?>
 ```
@@ -54,7 +61,7 @@ $args = array(
 
 $response = $newrelic->make_request( $args );
 
-print_r()
+print_r( $response );
 
 ?>
 ```
