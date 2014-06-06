@@ -12,7 +12,7 @@ To get started check the examples below.
 
 ### Basic Example
 
-`
+```php
 <?php
 
 // Replace with real API Key - http://docs.newrelic.com/docs/apis/api-key
@@ -28,11 +28,11 @@ $response = $newrelic->make_request();
 print_r()
 
 ?>
-`
+```
 
 ### Advanced Example
 
-`
+```php
 <?php
 
 // Replace with real API Key - http://docs.newrelic.com/docs/apis/api-key
@@ -57,4 +57,4 @@ $response = $newrelic->make_request( $args );
 print_r()
 
 ?>
-`
+```
