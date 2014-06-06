@@ -240,7 +240,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
 
             $default_args = array(
                 'method' => 'GET',
-                'timeout' => 0.1,
+                'timeout' => 5,
                 'httpversion' => '1.0',
                 'headers' => array(
                     'x-api-key' => $this->api_key,
