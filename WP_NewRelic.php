@@ -8,23 +8,6 @@
  * @version 1.0
  */
 
-/**
- * Basic Usage Example
- *
- * // Replace with real API Key - http://docs.newrelic.com/docs/apis/api-key
- * $api_key = 'XXXXXXXXXXXXXXXXXXXXXXX';
- *
- * $newrelic = new WP_NewRelic( $api_key );
- *
- * // Find the Call Type from here - https://rpm.newrelic.com/api/explore/
- * $newrelic->set_call_type( 'applications-list' );
- *
- * $response = $newrelic->make_request();
- *
- * print_r()
- *
- */
-
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -50,18 +33,11 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
         private $api_key;
 
         /**
-         * NewRelic Resource ID (Account, Application, Transaction, etc)
-         *
-         * @var int
-         */
-        private $resource_id;
-
-        /**
-         * NewRelic API Call Type
+         * Page Number
          *
          * @var string
          */
-        private $call_type;
+        private $page;
 
         /**
          * API Response Format
@@ -93,46 +69,24 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
         }
 
         /**
-         * Gets the Resource ID
+         * Gets the Page Number
          *
          * @return int
          */
-        public function get_resource_id() {
+        public function get_page() {
 
-            return $this->resource_id;
-
-        }
-
-        /**
-         * Sets the Resource ID
-         *
-         * @param int $resource_id
-         */
-        public function set_resource_id( $resource_id ) {
-
-            $this->resource_id = absint( $resource_id );
+            return $this->page;
 
         }
 
         /**
-         * Gets the Call Type
+         * Sets the Page Number
          *
-         * @return string
+         * @param int $page
          */
-        public function get_call_type() {
+        public function set_page( $page ) {
 
-            return $this->call_type;
-
-        }
-
-        /**
-         * Sets the Call Type
-         *
-         * @param string $call_type
-         */
-        public function set_call_type( $call_type ) {
-
-            $this->call_type = $call_type;
+            $this->page = $page;
 
         }
 
@@ -170,86 +124,248 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
         }
 
         /**
-         * Builds the URL
+         * List the Applications for authenticated Account.
          *
-         * @return string
+         * @param string $name
+         * @param string $ids
+         * @param string $language
+         * @return array|mixed
          */
-        public function build_url() {
+        public function get_applications( $name = null, $ids = null, $language = null ) {
 
-            switch ( $this->call_type ) {
+            $params = array(
+                'page' => $this->page,
+                'filter[name]' => $name,
+                'filter[ids]' => $ids,
+                'filter[language]' => $language,
+            );
 
-                // Application Endpoints
-                case 'applications-list':
-                    $url_args = 'applications';
-                    break;
-                case 'applications-show':
-                    $url_args = 'applications/' . $this->resource_id;
-                    break;
-                case 'applications-metric_names':
-                    $url_args = 'applications/' . $this->resource_id . '/metrics';
-                    break;
-                case 'applications-metric_names':
-                    $url_args = 'applications/' . $this->resource_id . '/metrics/data';
-                    break;
+            $url = $this->api_url . 'applications' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
 
-                // Server Endpoints
-                case 'servers-list':
-                    $url_args = 'servers';
-                    break;
-                case 'servers-show':
-                    $url_args = 'servers/' . $this->resource_id;
-                    break;
-                case 'servers-metric_names':
-                    $url_args = 'servers/' . $this->resource_id . '/metrics';
-                    break;
-                case 'servers-metric_names':
-                    $url_args = 'servers/' . $this->resource_id . '/metrics/data';
-                    break;
+            $response = $this->make_request( $url );
 
-                // Key Transaction Endpoints
-                case 'key_transactions-list':
-                    $url_args = 'key_transactions';
-                    break;
-                case 'key_transactions-show':
-                    $url_args = 'key_transactions/' . $this->resource_id;
-                    break;
+            return $response;
 
-                // Default - Not Found
-                default:
-                    return false;
+        }
 
-            }
+        /**
+         * Gets the Application by given Application ID.
+         *
+         * @param int $application_id
+         * @return array|mixed
+         */
+        public function get_application( $application_id ) {
 
-            return $this->api_url . $url_args . '.' . $this->response_format;
+            $url = $this->api_url . 'applications/' . $application_id . $this->response_format;
+
+            $response = $this->make_request( $url );
+
+            return $response;
+
+        }
+
+        /**
+         * Lists the Metric Names for given Application ID, optionally filtered by Metric Name.
+         *
+         * @param int $application_id
+         * @param string $name
+         * @return array|mixed
+         */
+        public function get_application_metric_names( $application_id, $name ) {
+
+            $params = array(
+                'page' => $this->page,
+                'name' => $name,
+            );
+
+            $url = $this->api_url . 'applications/' . $application_id . '/metrics' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+
+            $response = $this->make_request( $url );
+
+            return $response;
+
+        }
+
+        /**
+         * Lists the Metric Data for given Application ID, optionally filtered by Names, Values and Time Period.
+         *
+         * @param int $application_id
+         * @param array $names
+         * @param array $values
+         * @param string $from
+         * @param string $to
+         * @param bool $summarize
+         * @return array|mixed
+         */
+        public function get_application_metric_data( $application_id, $names = null, $values = null, $from = null, $to = null, $summarize = null ) {
+
+            $params = array(
+                'page' => $this->page,
+                'names' => $names,
+                'values' => $values,
+                'from' => $from,
+                'to' => $to,
+                'summarize' => $summarize,
+            );
+
+            $url = $this->api_url . 'applications/' . $application_id . '/metrics/data' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+
+            $response = $this->make_request( $url );
+
+            return $response;
+
+        }
+
+        /**
+         * Lists the Key Transactions for authenticated Account.
+         *
+         * @param string $name
+         * @param string $ids
+         * @return array|mixed
+         */
+        public function get_key_transactions( $name = null, $ids = null ) {
+
+            $params = array(
+                'page' => $this->page,
+                'filter[name]' => $name,
+                'filter[ids]' => $ids,
+            );
+
+            $url = $this->api_url . 'key_transactions' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+
+            $response = $this->make_request( $url );
+
+            return $response;
+
+        }
+
+        /**
+         * Gets the Key Transaction by given Transaction ID.
+         *
+         * @param int $transaction_id
+         * @return array|mixed
+         */
+        public function get_key_transaction( $transaction_id ) {
+
+            $url = $this->api_url . 'key_transactions/' . $transaction_id . $this->response_format;
+
+            $response = $this->make_request( $url );
+
+            return $response;
+
+        }
+
+        /**
+         * Lists all Servers for authenticated Account.
+         *
+         * @param string $name
+         * @param string $ids
+         * @return array|mixed
+         */
+        public function get_servers( $name = null, $ids = null ) {
+
+            $params = array(
+                'page' => $this->page,
+                'filter[name]' => $name,
+                'filter[ids]' => $ids,
+            );
+
+            $url = $this->api_url . 'servers' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+
+            $response = $this->make_request( $url );
+
+            return $response;
+
+        }
+
+        /**
+         * Gets the Server by given Server ID.
+         *
+         * @param int $server_id
+         * @return array|mixed
+         */
+        public function get_server( $server_id ) {
+
+            $url = $this->api_url . 'servers/' . $server_id . $this->response_format;
+
+            $response = $this->make_request( $url );
+
+            return $response;
+
+        }
+
+        /**
+         * Lists the Metric Names for given Server ID, optionally filtered by Metric Name.
+         *
+         * @param int $server_id
+         * @param string $name
+         * @return array|mixed
+         */
+        public function get_server_metric_names( $server_id, $name ) {
+
+            $params = array(
+                'page' => $this->page,
+                'name' => $name,
+            );
+
+            $url = $this->api_url . 'servers/' . $server_id . '/metrics' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+
+            $response = $this->make_request( $url );
+
+            return $response;
+
+        }
+
+        /**
+         * Lists the Metric Data for given Server ID, optionally filtered by Names, Values and Time Period.
+         *
+         * @param int $server_id
+         * @param array $names
+         * @param array $values
+         * @param string $from
+         * @param string $to
+         * @param bool $summarize
+         * @return array|mixed
+         */
+        public function get_server_metric_data( $server_id, $names = null, $values = null, $from = null, $to = null, $summarize = null ) {
+
+            $params = array(
+                'page' => $this->page,
+                'names' => $names,
+                'values' => $values,
+                'from' => $from,
+                'to' => $to,
+                'summarize' => $summarize,
+            );
+
+            $url = $this->api_url . 'servers/' . $server_id . '/metrics/data' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+
+            $response = $this->make_request( $url );
+
+            return $response;
 
         }
 
         /**
          * Make the HTTP Request
          *
-         * @param null $custom_args
+         * @param string $url
+         * @param string $method
          * @return array|mixed
          */
-        public function make_request( $custom_args = null ) {
-
-            $url = $this->build_url();
-
-            if ( false === $url ) {
-                return 'Error: Call Type not found.';
-            }
+        public function make_request( $url, $method = 'GET' ) {
 
             $default_args = array(
-                'method' => 'GET',
+                'method' => $method,
                 'timeout' => 5,
-                'httpversion' => '1.0',
+                'httpversion' => '1.1',
                 'headers' => array(
                     'x-api-key' => $this->api_key,
                 ),
                 'body' => null,
-                'sslverify' => true
             );
 
-            $args = wp_parse_args( $custom_args, $default_args );
+            $args = wp_parse_args( $this->custom_http_args, $default_args );
 
             $response = wp_remote_request( $url, $args );
 
@@ -262,8 +378,17 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
 
             } else {
 
-                // Decode JSON if needed
-                return ( 'json' === $this->response_format ) ? json_decode( $response['body'] ) : $response['body'] ;
+                $status = absint( wp_remote_retrieve_response_code( $response ) );
+
+                if ( 200 == $status ) {
+
+                    return ( 'json' === $this->response_format ) ? json_decode( $response['body'] ) : $response['body'] ;
+
+                } else {
+
+                    return $response;
+
+                }
 
             }
 
