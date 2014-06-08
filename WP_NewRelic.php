@@ -47,6 +47,13 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
         private $response_format = 'json';
 
         /**
+         * Custom WP HTTP API Args
+         *
+         * @var array
+         */
+        private $custom_http_args = array();
+
+        /**
          * Gets the API URL
          *
          * @return string
@@ -113,6 +120,30 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
         }
 
         /**
+         * Gets Custom HTTP API Args
+         * See defaults: http://codex.wordpress.org/Function_Reference/wp_remote_get#Default_Usage
+         *
+         * @return array
+         */
+        public function get_http_args() {
+
+            return $this->custom_http_args;
+
+        }
+
+        /**
+         * Sets the Custom HTTP API Args
+         * See defaults: http://codex.wordpress.org/Function_Reference/wp_remote_get#Default_Usage
+         *
+         * @param array $custom_http_args
+         */
+        public function set_http_args( $custom_http_args ) {
+
+            $this->custom_http_args = $custom_http_args;
+
+        }
+
+        /**
          * Constructor
          *
          * @param string $api_key
@@ -140,7 +171,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
                 'filter[language]' => $language,
             );
 
-            $url = $this->api_url . 'applications' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+            $url = $this->api_url . 'applications.' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
 
             $response = $this->make_request( $url );
 
@@ -156,7 +187,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          */
         public function get_application( $application_id ) {
 
-            $url = $this->api_url . 'applications/' . $application_id . $this->response_format;
+            $url = $this->api_url . 'applications/' . $application_id . '.' . $this->response_format;
 
             $response = $this->make_request( $url );
 
@@ -178,7 +209,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
                 'name' => $name,
             );
 
-            $url = $this->api_url . 'applications/' . $application_id . '/metrics' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+            $url = $this->api_url . 'applications/' . $application_id . '/metrics.' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
 
             $response = $this->make_request( $url );
 
@@ -197,7 +228,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          * @param bool $summarize
          * @return array|mixed
          */
-        public function get_application_metric_data( $application_id, $names = null, $values = null, $from = null, $to = null, $summarize = null ) {
+        public function get_application_metric_data( $application_id, $names = array(), $values = array(), $from = null, $to = null, $summarize = null ) {
 
             $params = array(
                 'page' => $this->page,
@@ -208,9 +239,9 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
                 'summarize' => $summarize,
             );
 
-            $url = $this->api_url . 'applications/' . $application_id . '/metrics/data' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+            $url = $this->api_url . 'applications/' . $application_id . '/metrics/data.' . $this->response_format . '?' . preg_replace( '/%5B[0-9]+?\%5D/simU', '%5B%5D', http_build_query( $params, '', '&' ) );
 
-            $response = $this->make_request( $url );
+            $response = $this->make_request( $url, 'GET' );
 
             return $response;
 
@@ -231,7 +262,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
                 'filter[ids]' => $ids,
             );
 
-            $url = $this->api_url . 'key_transactions' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+            $url = $this->api_url . 'key_transactions.' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
 
             $response = $this->make_request( $url );
 
@@ -247,7 +278,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          */
         public function get_key_transaction( $transaction_id ) {
 
-            $url = $this->api_url . 'key_transactions/' . $transaction_id . $this->response_format;
+            $url = $this->api_url . 'key_transactions/' . $transaction_id . '.' . $this->response_format;
 
             $response = $this->make_request( $url );
 
@@ -270,7 +301,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
                 'filter[ids]' => $ids,
             );
 
-            $url = $this->api_url . 'servers' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+            $url = $this->api_url . 'servers.' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
 
             $response = $this->make_request( $url );
 
@@ -286,7 +317,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          */
         public function get_server( $server_id ) {
 
-            $url = $this->api_url . 'servers/' . $server_id . $this->response_format;
+            $url = $this->api_url . 'servers/' . $server_id . '.' . $this->response_format;
 
             $response = $this->make_request( $url );
 
@@ -308,7 +339,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
                 'name' => $name,
             );
 
-            $url = $this->api_url . 'servers/' . $server_id . '/metrics' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+            $url = $this->api_url . 'servers/' . $server_id . '/metrics.' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
 
             $response = $this->make_request( $url );
 
@@ -338,7 +369,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
                 'summarize' => $summarize,
             );
 
-            $url = $this->api_url . 'servers/' . $server_id . '/metrics/data' . $this->response_format . '?' . http_build_query( $params, '', '&amp;' );
+            $url = $this->api_url . 'servers/' . $server_id . '/metrics/data.' . $this->response_format . '?' . preg_replace( '/%5B[0-9]+?\%5D/simU', '%5B%5D', http_build_query( $params, '', '&amp;' ) );
 
             $response = $this->make_request( $url );
 
@@ -354,6 +385,8 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          * @return array|mixed
          */
         public function make_request( $url, $method = 'GET' ) {
+
+            echo $url;
 
             $default_args = array(
                 'method' => $method,
