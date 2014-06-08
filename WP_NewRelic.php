@@ -171,7 +171,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          * @param string $name
          * @return array|mixed
          */
-        public function get_application_metric_names( $application_id, $name ) {
+        public function get_application_metric_names( $application_id, $name = null ) {
 
             $params = array(
                 'page' => $this->page,
@@ -301,7 +301,7 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          * @param string $name
          * @return array|mixed
          */
-        public function get_server_metric_names( $server_id, $name ) {
+        public function get_server_metric_names( $server_id, $name = null ) {
 
             $params = array(
                 'page' => $this->page,

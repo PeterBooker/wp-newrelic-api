@@ -12,14 +12,11 @@ An API key is used for authentication. You can find instructions on obtaining yo
 
 Not all Endpoints are supported yet, but all GET Endpoints are planned. PUT and DELETE Endpoints will be considered if there is interest. The following are supported:
 
-* servers-list
-* servers-show (Requires Server ID)
+* get_applications() - *List the Applications for authenticated Account.*
 
-* applications-list
-* applications-show (Requires Application ID)
+* get_application( $application_id ) - *Gets the Application by given Application ID.*
 
-* key_transactions-list
-* key_transactions-show (Requires Key Transaction ID)
+* 
 
 ## Usage Examples
 
