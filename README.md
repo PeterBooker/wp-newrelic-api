@@ -52,14 +52,16 @@ $application_id = 'XXXXXXXXX';
 
 $response = $newrelic->get_application( $application_id );
 
+echo '<pre>';
 print_r( $response );
+echo '</pre>';
 
 ?>
 ```
 
 ### Advanced Example
 
-This advanced example shows you how to fetch the Commits for a particular Repository. It involves setting pagination options as well as a time period to return the data for and a timezone for that time period.
+This advanced example shows you how to fetch Metric Values for a particular Application. You can filter by Metric Names and Values as well as a Time Period.
 
 ```php
 <?php
@@ -69,21 +71,24 @@ $api_key = 'XXXXXXXXXXXXXXXXXXXXXXX';
 
 $newrelic = new WP_NewRelic( $api_key );
 
-// Find the Call Type from here - https://rpm.newrelic.com/api/explore/
-$newrelic->set_call_type( 'applications-show' );
+$application_id = 'XXXXXXXXX';
+        
+$names = array( 'External/all' );
+        
+$values = array( 'call_count', 'average_response_time' );
+        
+$now = date( 'Y-m-d H:i:s' );
+        
+$from = new DateTime( $now );
+$from->modify( '-6 hours' );
+        
+$to = new DateTime( $now );
+        
+$response = $newrelic->get_application_metric_data( $application_id, $names, $values, $from, $to, true );
 
-$app_id = 000000;
-
-$newrelic->set_resource_id( $app_id );
-
-// WP HTTP API Args
-$args = array(
-    'sslverify' => false,
-);
-
-$response = $newrelic->make_request( $args );
-
+echo '<pre>';
 print_r( $response );
+echo '</pre>';
 
 ?>
 ```
