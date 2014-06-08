@@ -1,8 +1,12 @@
 # WP NewRelic
 
-WP NewRelic handles communication between WordPress and the NewRelic API v2. It can be added to your theme/plugin or the /mu-plugins/ folder.
+WP NewRelic handles communication between WordPress and the NewRelic API v2. It can be added to your theme/plugin or the /mu-plugins/ folder. It is designed to allow easy fetching of data from NewRelic to use and/or display on your WordPress site.
 
 You can see more information about NewRelic's v2 API here: [https://rpm.newrelic.com/api/explore](https://rpm.newrelic.com/api/explore)
+
+## Authentication
+
+An API key is used for authentication. You can find instructions on obtaining your API key [here](https://docs.newrelic.com/docs/apis/api-key).
 
 ## Supported Endpoints
 
