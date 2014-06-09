@@ -386,8 +386,6 @@ if ( ! class_exists( 'WP_NewRelic' ) ) {
          */
         public function make_request( $url, $method = 'GET' ) {
 
-            echo $url;
-
             $default_args = array(
                 'method' => $method,
                 'timeout' => 5,
