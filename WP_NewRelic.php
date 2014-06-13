@@ -1,11 +1,12 @@
 <?php
 /**
- * NewRelic API
- *
- * Handles communication between WordPress and the NewRelic API
- * Supports v2 of the API - https://rpm.newrelic.com/api/explore/
- *
- * @version 1.0
+ * Plugin Name: New Relic API Wrapper
+ * Plugin URI:  https://kebopowered.com/plugins/kebo-social/
+ * Description: Handles communication between WordPress and the NewRelic API. Supports v2 of the API - https://rpm.newrelic.com/api/explore/
+ * Version:     1.0
+ * Author:      Peter Booker
+ * Author URI:  http://peterbooker.com
+ * License:     GPLv2+
  */
 
 // Exit if accessed directly
